@@ -31,7 +31,13 @@ Or do it manually:
 
 ```
 python -m venv venv
-venv\Scripts\activate
+
+# CMD
+venv\Scripts\activate.bat
+
+# PowerShell
+.\venv\Scripts\Activate.ps1
+
 pip install -r requirements.txt
 ```
 
