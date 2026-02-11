@@ -1,0 +1,57 @@
+00:05:00 | INFO    | travel_assistant | 🔧 triage_agent → handoff_to_weather_agent()
+00:05:00 | INFO    | travel_assistant |    ← handoff_to_weather_agent result: {'handoff_to': 'weather_agent'}
+00:05:00 | INFO    | travel_assistant | 🔀 Handoff: triage_agent → weather_agent
+00:05:02 | INFO    | travel_assistant | 🔧 weather_agent → get_weather()
+00:05:02 | INFO    | travel_assistant |    ← get_weather result: {   "destination": "Tokyo, Japan",   "current": {     "temperature_c": 2.5,     …
+00:05:06 | INFO    | travel_assistant | ✓ weather_agent completed (5367ms)
+00:05:06 | INFO    | travel_assistant | 📄 Trace saved: travel_assistant/log/traces/trace_handoff_20260211_000506.json
+00:05:06 | INFO    | travel_assistant | Events: 204 | Agents: triage_agent → weather_agent | Duration: 7055ms
+00:05:07 | INFO    | travel_assistant | 🔧 triage_agent → handoff_to_booking_agent()
+00:05:07 | INFO    | travel_assistant |    ← handoff_to_booking_agent result: {'handoff_to': 'booking_agent'}
+00:05:07 | INFO    | travel_assistant | 🔀 Handoff: triage_agent → booking_agent
+00:05:09 | INFO    | travel_assistant | 🔧 booking_agent → search_flights()
+00:05:09 | INFO    | travel_assistant |    ← search_flights result: {   "origin": "Dublin",   "destination": "Barcelona",   "date": "2025-03-01",   …
+00:05:13 | INFO    | travel_assistant | ✓ booking_agent completed (5871ms)
+00:05:13 | INFO    | travel_assistant | 📄 Trace saved: travel_assistant/log/traces/trace_handoff_20260211_000513.json
+00:05:13 | INFO    | travel_assistant | Events: 393 | Agents: triage_agent → booking_agent | Duration: 7538ms
+00:05:17 | INFO    | travel_assistant | 🔧 triage_agent → handoff_to_weather_agent()
+00:05:17 | INFO    | travel_assistant |    ← handoff_to_weather_agent result: {'handoff_to': 'weather_agent'}
+00:05:17 | INFO    | travel_assistant | 🔀 Handoff: triage_agent → weather_agent
+00:05:19 | INFO    | travel_assistant | 🔧 weather_agent → get_weather()
+00:05:19 | INFO    | travel_assistant |    ← get_weather result: {   "destination": "Reykjavik, Iceland",   "current": {     "temperature_c": -0.…
+00:05:20 | INFO    | travel_assistant | 🔧 weather_agent → get_forecast()
+00:05:21 | INFO    | travel_assistant |    ← get_forecast result: {   "destination": "Reykjavik, Iceland",   "forecast": [     {       "date": "20…
+00:05:22 | INFO    | travel_assistant | 🔧 weather_agent → handoff_to_packing_agent()
+00:05:23 | INFO    | travel_assistant |    ← handoff_to_packing_agent result: {'handoff_to': 'packing_agent'}
+00:05:23 | INFO    | travel_assistant | 🔀 Handoff: weather_agent → packing_agent
+00:05:23 | INFO    | travel_assistant | ✓ weather_agent completed (5905ms)
+00:05:24 | INFO    | travel_assistant | 🔧 packing_agent → get_packing_list()
+00:05:26 | INFO    | travel_assistant |    ← get_packing_list result: {   "packing_list": {     "essentials": [       "Passport/ID",       "Phone char…
+00:05:26 | INFO    | travel_assistant | 🔧 packing_agent → check_luggage_restrictions()
+00:05:26 | INFO    | travel_assistant |    ← check_luggage_restrictions result: {   "airline": "general",   "carry_on": {     "max_weight_kg": 7,     "max_dimen…
+00:05:33 | INFO    | travel_assistant | ✓ packing_agent completed (10306ms)
+00:05:33 | INFO    | travel_assistant | 📄 Trace saved: travel_assistant/log/traces/trace_handoff_20260211_000533.json
+00:05:33 | INFO    | travel_assistant | Events: 557 | Agents: triage_agent → weather_agent → packing_agent | Duration: 19783ms
+00:05:36 | INFO    | travel_assistant | ✓ weather_agent completed (2910ms)
+00:05:39 | INFO    | travel_assistant | 🔧 packing_agent → get_packing_list()
+00:05:39 | INFO    | travel_assistant | 🔧 packing_agent → check_luggage_restrictions()
+00:05:39 | INFO    | travel_assistant |    ← check_luggage_restrictions result: {   "packing_list": {     "essentials": [       "Passport/ID",       "Phone char…
+00:05:39 | INFO    | travel_assistant |    ← get_packing_list result: {   "airline": "general",   "carry_on": {     "max_weight_kg": 7,     "max_dimen…
+00:05:47 | INFO    | travel_assistant | ✓ packing_agent completed (10522ms)
+00:05:47 | INFO    | travel_assistant | 📄 Trace saved: travel_assistant/log/traces/trace_sequential_20260211_000547.json
+00:05:47 | INFO    | travel_assistant | Events: 521 | Agents: weather_agent → packing_agent | Duration: 13641ms
+00:05:49 | INFO    | travel_assistant | 🔧 booking_agent → search_flights()
+00:05:49 | INFO    | travel_assistant |    ← search_flights result: {   "origin": "Dublin",   "destination": "Galway",   "date": "2025-03-01",   "fl…
+00:05:52 | INFO    | travel_assistant | 🔧 activities_agent → get_activities()
+00:05:52 | INFO    | travel_assistant | 🔧 activities_agent → get_local_tips()
+00:05:52 | INFO    | travel_assistant |    ← get_local_tips result: {   "destination": "Galway, Ireland",   "activities": {     "sightseeing": [    …
+00:05:52 | INFO    | travel_assistant |    ← get_activities result: {   "destination": "Galway, Ireland",   "tips": {     "currency": "Check XE.com …
+00:05:53 | INFO    | travel_assistant | 🔧 weather_agent → get_weather()
+00:05:53 | INFO    | travel_assistant | 🔧 weather_agent → get_forecast()
+00:05:53 | INFO    | travel_assistant |    ← get_forecast result: {   "destination": "Galway, Ireland",   "current": {     "temperature_c": 8.8,  …
+00:05:53 | INFO    | travel_assistant |    ← get_weather result: {   "destination": "Galway, Ireland",   "forecast": [     {       "date": "2026-…
+00:06:04 | INFO    | travel_assistant | ✓ booking_agent completed (16766ms)
+00:06:04 | INFO    | travel_assistant | ✓ weather_agent completed (16870ms)
+00:06:13 | INFO    | travel_assistant | ✓ activities_agent completed (25799ms)
+00:06:13 | INFO    | travel_assistant | 📄 Trace saved: travel_assistant/log/traces/trace_concurrent_20260211_000613.json
+00:06:13 | INFO    | travel_assistant | Events: 2384 | Agents: weather_agent → activities_agent → booking_agent | Duration: 26013ms

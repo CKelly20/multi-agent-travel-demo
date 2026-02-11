@@ -1,62 +1,102 @@
-# Travel Assistant Demo
+# Travel Assistant — Microsoft Agent Framework
 
-A multi-agent travel assistant that uses an LLM-powered orchestrator to route user requests to specialised agents:
+Multi-agent travel assistant demonstrating three orchestration patterns from the [Microsoft Agent Framework](https://github.com/microsoft/agent-framework).
 
-- **Weather Agent** - Fetches current weather for a destination using the WeatherAPI.
-- **Packing Agent** - Suggests packing items based on weather conditions using Azure OpenAI.
-- **Orchestrator** - Classifies user intent, extracts destination and date, and routes to the appropriate agent(s). When both agents are needed, it composes a single response from their outputs.
+## Architecture
 
-## Prerequisites
+### Handoff Workflow (primary)
+```
+User → TriageAgent ─┬── handoff → WeatherAgent ──┬── handoff → PackingAgent
+                     ├── handoff → PackingAgent    └── handoff → ActivitiesAgent
+                     ├── handoff → ActivitiesAgent ── handoff → BookingAgent
+                     └── handoff → BookingAgent    ── handoff → WeatherAgent
+```
+Triage classifies intent and routes to specialists. Specialists can hand off to each other for multi-topic requests. Full conversation history is preserved across all transitions.
 
-- Python 3.10+
-- An Azure OpenAI resource with a deployed chat model
-- A WeatherAPI key from [weatherapi.com](https://www.weatherapi.com/)
+### Sequential Workflow
+```
+User → WeatherAgent → PackingAgent → Output
+```
+Packing agent sees weather context in conversation history, so suggestions are weather-appropriate.
+
+### Concurrent Workflow
+```
+User ──┬── WeatherAgent   ──┐
+       ├── ActivitiesAgent ──┼── Custom Aggregator → Combined Output
+       └── BookingAgent    ──┘
+```
+All three agents process the same request in parallel. Results are merged by a custom aggregator.
+
+## Agents & Tools
+
+| Agent | Tools | Hands off to |
+|-------|-------|-------------|
+| **TriageAgent** | *(handoff tools auto-registered)* | All specialists |
+| **WeatherAgent** | `get_weather`, `get_forecast` | Packing, Activities |
+| **PackingAgent** | `get_packing_list`, `check_luggage_restrictions` | — |
+| **ActivitiesAgent** | `get_activities`, `get_local_tips` | Booking |
+| **BookingAgent** | `search_flights`, `search_hotels`, `book_flight`, `book_hotel` | Weather |
 
 ## Setup
 
-1. Clone the repository:
-
-```
-git clone <repo-url>
-cd travel-assistant-demo
+```bash
+python -m travel_assistant.demo
 ```
 
-2. Run the setup script to create a virtual environment and install dependencies:
+## Logging
+
+Every workflow event is logged with timestamps and executor IDs:
+- `▶ INVOKED` — executor started
+- `✓ COMPLETE` — executor finished (with duration in ms)
+- `⚡ STREAM` — agent streaming tokens (DEBUG level)
+- `📦 OUTPUT` — intermediate outputs
+- `🏁 FINAL` — workflow result
+
+Logs go to console + optional file. Review for prompt refinement and debugging.
+
+## Project Structure
 
 ```
-setup.bat
+travel_assistant/
+├── __init__.py
+├── runner.py              # Unified entry point for all workflows
+├── mock_data.py           # Rich mock data (swap to real APIs later)
+├── logger.py              # Workflow event logging
+├── demo.py                # Demo with 5 test scenarios
+├── .env.example
+├── requirements.txt
+├── agents/
+│   └── definitions.py     # All 5 agents + 12 tools
+└── workflows/
+    ├── handoff.py          # HandoffBuilder — triage routing
+    ├── concurrent.py       # ConcurrentBuilder — parallel agents
+    └── sequential.py       # SequentialBuilder — chained pipeline
 ```
 
-Or do it manually:
+## Key Framework Features Used
 
-```
-python -m venv venv
+| Feature | From | Used for |
+|---------|------|----------|
+| `HandoffBuilder` | `agent_framework.orchestrations` | Triage → specialist routing with directed handoffs |
+| `ConcurrentBuilder` | `agent_framework.orchestrations` | Parallel fan-out with custom aggregator |
+| `SequentialBuilder` | `agent_framework.orchestrations` | Chained agent pipeline |
+| `ChatAgent` | `agent_framework` | Agent creation with tools |
+| `@ai_function` | `agent_framework` | Tool registration with auto schema |
+| `AzureOpenAIChatClient` | `agent_framework.azure` | Azure OpenAI integration |
+| Event streaming | `workflow.run(stream=True)` | Real-time observability |
 
-# CMD
-venv\Scripts\activate.bat
+## Swapping to Real APIs
 
-# PowerShell
-.\venv\Scripts\Activate.ps1
+Each tool in `mock_data.py` has a clean signature. Replace the function body:
 
-pip install -r requirements.txt
-```
+```python
+# Before:
+def mock_search_flights(origin, destination, date):
+    return json.dumps({...fake...})
 
-3. Copy the sample environment file and fill in your API keys:
-
-```
-copy .env.sample .env
-```
-
-Edit `.env` with your actual values. See `.env.sample` for the required variables.
-
-## Configuration
-
-`config.json` contains non-secret configuration such as API versions, the weather API base URL, and token limits for each agent. Adjust these as needed.
-
-## Running the Demo
-
-```
-python demo.py
+# After:
+def mock_search_flights(origin, destination, date):
+    return json.dumps(amadeus_client.search(origin, destination, date).data)
 ```
 
-This runs four test scenarios covering weather-only requests, packing-only requests, combined trip advice, and natural language variations.
+Agents, workflows, and logging are unchanged.
