@@ -43,17 +43,6 @@ All three agents process the same request in parallel. Results are merged by a c
 python -m travel_assistant.demo
 ```
 
-## Logging
-
-Every workflow event is logged with timestamps and executor IDs:
-- `▶ INVOKED` — executor started
-- `✓ COMPLETE` — executor finished (with duration in ms)
-- `⚡ STREAM` — agent streaming tokens (DEBUG level)
-- `📦 OUTPUT` — intermediate outputs
-- `🏁 FINAL` — workflow result
-
-Logs go to console + optional file. Review for prompt refinement and debugging.
-
 ## Project Structure
 
 ```
@@ -77,26 +66,13 @@ travel_assistant/
 
 | Feature | From | Used for |
 |---------|------|----------|
-| `HandoffBuilder` | `agent_framework.orchestrations` | Triage → specialist routing with directed handoffs |
-| `ConcurrentBuilder` | `agent_framework.orchestrations` | Parallel fan-out with custom aggregator |
-| `SequentialBuilder` | `agent_framework.orchestrations` | Chained agent pipeline |
+| `HandoffBuilder` | `agent_framework` | Triage → specialist routing with directed handoffs |
+| `ConcurrentBuilder` | `agent_framework` | Parallel fan-out with custom aggregator |
+| `SequentialBuilder` | `agent_framework` | Chained agent pipeline |
 | `ChatAgent` | `agent_framework` | Agent creation with tools |
 | `@ai_function` | `agent_framework` | Tool registration with auto schema |
 | `AzureOpenAIChatClient` | `agent_framework.azure` | Azure OpenAI integration |
 | Event streaming | `workflow.run(stream=True)` | Real-time observability |
 
-## Swapping to Real APIs
-
-Each tool in `mock_data.py` has a clean signature. Replace the function body:
-
-```python
-# Before:
-def mock_search_flights(origin, destination, date):
-    return json.dumps({...fake...})
-
-# After:
-def mock_search_flights(origin, destination, date):
-    return json.dumps(amadeus_client.search(origin, destination, date).data)
-```
-
-Agents, workflows, and logging are unchanged.
+## Logging
+All logs upon running the demo are available in log/traces/ and can be tracked via log/travel_assistant.log
